@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>VERA — Accessories</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Italiana&display=swap" rel="stylesheet">
+  <style>
+    :root{--ink:#171713;--muted:#756f66;--line:rgba(23,23,19,.13);--ease:cubic-bezier(.22,1,.36,1)}
+    body{margin:0;font-family:"DM Sans",sans-serif;color:var(--ink);background:#fff}
+    .shell{width:min(980px,calc(100% - 40px));margin:40px auto}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+    .brand img{width:140px}
+    .product-card{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+    .stage img{width:100%;height:auto;display:block}
+    .hero h1{font-family:"Italiana",serif;font-size:36px;margin:0}
+    .eyebrow{font-size:11px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase}
+    .label{font-size:13px;font-weight:500}
+    .variants{display:flex;gap:10px;margin-top:10px}
+    .variant{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);cursor:pointer}
+    .swatch{width:20px;height:20px;border-radius:50%}
+    .checkout{display:inline-block;padding:14px 18px;background:var(--ink);color:#fff;text-transform:uppercase;letter-spacing:.14em;border:0;margin-top:18px}
+    .back{display:inline-block;margin-top:18px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <a class="brand" href="index.html"><img src="vera-logo.png" alt="VERA"></a>
+      <nav><a href="index.html">Home</a></nav>
+    </header>
+    <main>
+      <section class="product-card">
+        <div class="stage"><img id="productImage" src="vera-gold-transparent.png" alt="Gold VERA herringbone bracelet"></div>
+        <aside>
+          <div class="eyebrow">VERA · True by nature</div>
+          <h1>Herringbone Bracelet</h1>
+          <p style="color:var(--muted)">A smooth, fluid silhouette that catches the light without asking for attention. Designed to feel polished alone and effortless in a stack.</p>
+          <div class="label">Choose your finish</div>
+          <div class="variants" role="radiogroup" aria-label="Bracelet finish">
+            <button class="variant active" data-variant="gold" aria-checked="true"><span class="swatch" style="background:linear-gradient(135deg,#f7dfa1,#b47c12)"></span><div><strong>Gold</strong><div style="font-size:12px;color:var(--muted)">Warm finish</div></div></button>
+            <button class="variant" data-variant="silver" aria-checked="false"><span class="swatch" style="background:linear-gradient(135deg,#fff,#9b9b9b)"></span><div><strong>Silver</strong><div style="font-size:12px;color:var(--muted)">Cool finish</div></div></button>
+          </div>
+          <a class="checkout checkout-link" href="https://square.link/u/yBgPcyaR">Shop Gold</a>
+          <div class="back"><a href="index.html">← Back to home</a></div>
+        </aside>
+      </section>
+    </main>
+  </div>
+  <script>
+    const products={gold:{label:'Gold',checkout:'https://square.link/u/yBgPcyaR',image:'vera-gold-transparent.png'},silver:{label:'Silver',checkout:'https://square.link/u/RQw3nGCK',image:'vera-silver-transparent.png'}};
+    const image=document.getElementById('productImage');
+    function selectVariant(name){const p=products[name];document.querySelectorAll('.variant').forEach(b=>{const active=b.dataset.variant===name;b.classList.toggle('active',active);b.setAttribute('aria-checked',active)});image.src=p.image;document.querySelectorAll('.checkout-link').forEach(a=>a.href=p.checkout);}
+    document.querySelectorAll('.variant').forEach(b=>b.addEventListener('click',()=>selectVariant(b.dataset.variant)));
+  </script>
+</body>
+</html>
