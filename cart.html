@@ -2,13 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>VERA — Cart</title>
-  <style>body{font-family:DM Sans, sans-serif;margin:40px;color:#171713}</style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VERA — Bag</title>
+  <link rel="stylesheet" href="site.css">
+  <link rel="icon" href="vera-logo.png">
 </head>
-<body>
-  <a href="index.html">← Back to home</a>
-  <h1>Cart</h1>
-  <p>Your cart is empty.</p>
+<body class="page page-paper">
+  <header class="site-header site-header--paper"><div class="shell site-header-inner"><div class="site-nav-start"><nav class="site-nav-links" aria-label="Primary navigation"><a href="summer.html">Summer '26</a><a href="clothing.html">Clothing</a><a href="accessories.html">Accessories</a><a href="index.html#shop-all">Shop all</a></nav></div><a class="site-logo" href="index.html" aria-label="VERA home"><img src="vera-logo.png" alt="VERA"></a><div class="site-nav-right"><details class="language-menu"><summary class="language-link"><span class="language-current">English</span><span class="language-arrow">⌄</span></summary><div class="language-options"><button type="button" data-language="English">English</button><button type="button" data-language="Español">Español</button><button type="button" data-language="Français">Français</button><button type="button" data-language="Deutsch">Deutsch</button></div></details><a class="cart-link" href="cart.html">Bag <span class="cart-count" data-cart-count>0</span></a></div></div></header>
+  <main class="cart-main">
+    <div class="cart-heading" data-reveal><div><p class="section-kicker">Your selection</p><h1>Your bag</h1></div><p>A quiet place for the pieces you want to take with you.</p></div>
+    <div class="cart-list" data-cart-list></div>
+    <p class="cart-empty" data-cart-empty>Your bag is empty for now. Start with a look through the collections.</p>
+    <div class="cart-summary is-hidden" data-cart-summary><span class="cart-total">Total <span data-cart-total>$0.00</span></span><button class="button-solid" type="button" data-mock-checkout>Checkout preview</button></div>
+  </main>
+  <footer class="site-footer"><div class="shell footer-inner"><a class="footer-logo" href="index.html"><img src="vera-logo.png" alt="VERA"></a><p>True by nature.</p><div><a href="summer.html">Summer 26</a><a href="accessories.html">Accessories</a></div><span>© <span data-year></span> VERA</span></div></footer>
+  <script src="site.js" defer></script>
 </body>
 </html>

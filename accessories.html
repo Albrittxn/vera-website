@@ -2,56 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VERA — Accessories</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Italiana&display=swap" rel="stylesheet">
-  <style>
-    :root{--ink:#171713;--muted:#756f66;--line:rgba(23,23,19,.13);--ease:cubic-bezier(.22,1,.36,1)}
-    body{margin:0;font-family:"DM Sans",sans-serif;color:var(--ink);background:#fff}
-    .shell{width:min(980px,calc(100% - 40px));margin:40px auto}
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-    .brand img{width:140px}
-    .product-card{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
-    .stage img{width:100%;height:auto;display:block}
-    .hero h1{font-family:"Italiana",serif;font-size:36px;margin:0}
-    .eyebrow{font-size:11px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase}
-    .label{font-size:13px;font-weight:500}
-    .variants{display:flex;gap:10px;margin-top:10px}
-    .variant{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);cursor:pointer}
-    .swatch{width:20px;height:20px;border-radius:50%}
-    .checkout{display:inline-block;padding:14px 18px;background:var(--ink);color:#fff;text-transform:uppercase;letter-spacing:.14em;border:0;margin-top:18px}
-    .back{display:inline-block;margin-top:18px;color:var(--muted)}
-  </style>
+  <link rel="stylesheet" href="site.css">
+  <link rel="icon" href="vera-logo.png">
 </head>
-<body>
-  <div class="shell">
-    <header>
-      <a class="brand" href="index.html"><img src="vera-logo.png" alt="VERA"></a>
-      <nav><a href="index.html">Home</a></nav>
-    </header>
-    <main>
-      <section class="product-card">
-        <div class="stage"><img id="productImage" src="vera-gold-transparent.png" alt="Gold VERA herringbone bracelet"></div>
-        <aside>
-          <div class="eyebrow">VERA · True by nature</div>
-          <h1>Herringbone Bracelet</h1>
-          <p style="color:var(--muted)">A smooth, fluid silhouette that catches the light without asking for attention. Designed to feel polished alone and effortless in a stack.</p>
-          <div class="label">Choose your finish</div>
-          <div class="variants" role="radiogroup" aria-label="Bracelet finish">
-            <button class="variant active" data-variant="gold" aria-checked="true"><span class="swatch" style="background:linear-gradient(135deg,#f7dfa1,#b47c12)"></span><div><strong>Gold</strong><div style="font-size:12px;color:var(--muted)">Warm finish</div></div></button>
-            <button class="variant" data-variant="silver" aria-checked="false"><span class="swatch" style="background:linear-gradient(135deg,#fff,#9b9b9b)"></span><div><strong>Silver</strong><div style="font-size:12px;color:var(--muted)">Cool finish</div></div></button>
-          </div>
-          <a class="checkout checkout-link" href="https://square.link/u/yBgPcyaR">Shop Gold</a>
-          <div class="back"><a href="index.html">← Back to home</a></div>
-        </aside>
+<body class="page page-paper">
+  <header class="site-header site-header--paper"><div class="shell site-header-inner"><div class="site-nav-start"><nav class="site-nav-links" aria-label="Primary navigation"><a href="summer.html">Summer '26</a><a href="clothing.html">Clothing</a><a href="accessories.html">Accessories</a><a href="index.html#shop-all">Shop all</a></nav></div><a class="site-logo" href="index.html" aria-label="VERA home"><img src="vera-logo.png" alt="VERA"></a><div class="site-nav-right"><details class="language-menu"><summary class="language-link"><span class="language-current">English</span><span class="language-arrow">⌄</span></summary><div class="language-options"><button type="button" data-language="English">English</button><button type="button" data-language="Español">Español</button><button type="button" data-language="Français">Français</button><button type="button" data-language="Deutsch">Deutsch</button></div></details><a class="cart-link" href="cart.html">Bag <span class="cart-count" data-cart-count>0</span></a></div></div></header>
+  <main class="collection-main">
+    <div class="shell">
+      <div class="collection-heading" data-reveal><div><p class="section-kicker">The finishing touch</p><h1>Accessories</h1></div><p>Small, considered details that catch the light and keep the day moving.</p></div>
+      <div class="catalog-meta"><span>03 pieces</span><span>Made to layer</span></div>
+      <section class="product-grid" aria-label="Accessory products">
+        <article class="product-card" data-reveal><div class="product-visual"><span class="product-index">01</span><img src="vera-gold-transparent.png" alt="Gold herringbone bracelet"></div><div class="product-details"><h2>Herringbone Bracelet</h2><div class="product-meta"><span>Gold finish</span><span>$68</span></div><button class="add-button" type="button" data-product="Herringbone Bracelet" data-price="68" data-image="vera-gold-transparent.png">Add to bag</button></div></article>
+        <article class="product-card" data-reveal><div class="product-visual product-visual--sun"><span class="product-index">02</span><span class="product-art">Canvas</span></div><div class="product-details"><h2>Canvas Tote</h2><div class="product-meta"><span>Heavy cotton</span><span>$52</span></div><button class="add-button" type="button" data-product="Canvas Tote" data-price="52">Add to bag</button></div></article>
+        <article class="product-card" data-reveal><div class="product-visual product-visual--night"><span class="product-index">03</span><span class="product-art">Coast</span></div><div class="product-details"><h2>Coast Scarf</h2><div class="product-meta"><span>Lightweight wool</span><span>$48</span></div><button class="add-button" type="button" data-product="Coast Scarf" data-price="48">Add to bag</button></div></article>
       </section>
-    </main>
-  </div>
-  <script>
-    const products={gold:{label:'Gold',checkout:'https://square.link/u/yBgPcyaR',image:'vera-gold-transparent.png'},silver:{label:'Silver',checkout:'https://square.link/u/RQw3nGCK',image:'vera-silver-transparent.png'}};
-    const image=document.getElementById('productImage');
-    function selectVariant(name){const p=products[name];document.querySelectorAll('.variant').forEach(b=>{const active=b.dataset.variant===name;b.classList.toggle('active',active);b.setAttribute('aria-checked',active)});image.src=p.image;document.querySelectorAll('.checkout-link').forEach(a=>a.href=p.checkout);}
-    document.querySelectorAll('.variant').forEach(b=>b.addEventListener('click',()=>selectVariant(b.dataset.variant)));
-  </script>
+      <p class="catalog-note">A simple preview of what is coming next.</p>
+    </div>
+  </main>
+  <footer class="site-footer"><div class="shell footer-inner"><a class="footer-logo" href="index.html"><img src="vera-logo.png" alt="VERA"></a><p>True by nature.</p><div><a href="clothing.html">Clothing</a><a href="cart.html">Bag</a></div><span>© <span data-year></span> VERA</span></div></footer>
+  <script src="site.js" defer></script>
 </body>
 </html>

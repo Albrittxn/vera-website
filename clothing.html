@@ -2,13 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VERA — Clothing</title>
-  <style>body{font-family:DM Sans, sans-serif;margin:40px;color:#171713}</style>
+  <link rel="stylesheet" href="site.css">
+  <link rel="icon" href="vera-logo.png">
 </head>
-<body>
-  <a href="index.html">← Back to home</a>
-  <h1>Clothing</h1>
-  <p>Collection page placeholder.</p>
+<body class="page page-paper">
+  <header class="site-header site-header--paper"><div class="shell site-header-inner"><div class="site-nav-start"><nav class="site-nav-links" aria-label="Primary navigation"><a href="summer.html">Summer '26</a><a href="clothing.html">Clothing</a><a href="accessories.html">Accessories</a><a href="index.html#shop-all">Shop all</a></nav></div><a class="site-logo" href="index.html" aria-label="VERA home"><img src="vera-logo.png" alt="VERA"></a><div class="site-nav-right"><details class="language-menu"><summary class="language-link"><span class="language-current">English</span><span class="language-arrow">⌄</span></summary><div class="language-options"><button type="button" data-language="English">English</button><button type="button" data-language="Español">Español</button><button type="button" data-language="Français">Français</button><button type="button" data-language="Deutsch">Deutsch</button></div></details><a class="cart-link" href="cart.html">Bag <span class="cart-count" data-cart-count>0</span></a></div></div></header>
+  <main class="collection-main">
+    <div class="shell">
+      <div class="collection-heading" data-reveal><div><p class="section-kicker">The everyday edit</p><h1>Clothing</h1></div><p>Relaxed shapes and natural textures for the days that do not need a plan.</p></div>
+      <div class="catalog-meta"><span>03 pieces</span><span>Natural textures</span></div>
+      <section class="product-grid" aria-label="Clothing products">
+        <article class="product-card" data-reveal><div class="product-visual product-visual--mist"><span class="product-index">01</span><span class="product-art">Cloudline</span></div><div class="product-details"><h2>Cloudline Shirt</h2><div class="product-meta"><span>Soft cotton</span><span>$120</span></div><button class="add-button" type="button" data-product="Cloudline Shirt" data-price="120">Add to bag</button></div></article>
+        <article class="product-card" data-reveal><div class="product-visual product-visual--sky"><span class="product-index">02</span><span class="product-art">Open Knit</span></div><div class="product-details"><h2>Open Knit Tank</h2><div class="product-meta"><span>Organic cotton</span><span>$64</span></div><button class="add-button" type="button" data-product="Open Knit Tank" data-price="64">Add to bag</button></div></article>
+        <article class="product-card" data-reveal><div class="product-visual product-visual--stone"><span class="product-index">03</span><span class="product-art">Dune</span></div><div class="product-details"><h2>Dune Trouser</h2><div class="product-meta"><span>Easy linen</span><span>$140</span></div><button class="add-button" type="button" data-product="Dune Trouser" data-price="140">Add to bag</button></div></article>
+      </section>
+      <p class="catalog-note">A simple preview of what is coming next.</p>
+    </div>
+  </main>
+  <footer class="site-footer"><div class="shell footer-inner"><a class="footer-logo" href="index.html"><img src="vera-logo.png" alt="VERA"></a><p>True by nature.</p><div><a href="accessories.html">Accessories</a><a href="cart.html">Bag</a></div><span>© <span data-year></span> VERA</span></div></footer>
+  <script src="site.js" defer></script>
 </body>
 </html>
