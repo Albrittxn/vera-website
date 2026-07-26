@@ -2,7 +2,19 @@
   document.documentElement.classList.add('js');
   const storageKey = 'vera-cart';
   const imageAliases = { 'vera-linen-short-white.jpg': 'vera-linen-short-card.jpg', 'vera-linen-shirt-white.jpg': 'vera-linen-shirt-card.jpg', 'vera-linen-pant-white.jpg': 'vera-linen-pant-card.jpg', 'vera-sailor-cap-black.jpg': 'vera-sailor-cap-card.jpg', 'vera-palm-cap-black.jpg': 'vera-palm-cap-card.jpg' };
-  const readCart = () => { try { return JSON.parse(localStorage.getItem(storageKey) || '[]').map((item) => ({ ...item, image: imageAliases[item.image] || item.image })); } catch { return []; } };
+  const productNameAliases = {
+    'Maré Linen Short': 'Portofino Linen Shorts',
+    'Maré Linen Shirt': 'Sorrento Linen Shirt',
+    'Maré Linen Pant': 'Ravello Linen Trousers',
+    'Maré Sailor Cap': 'Regatta Sailor Cap',
+    'Maré Palm Cap': 'Palm Coast Cap',
+    'Maré Ridged Case': 'Riviera Ridged Case',
+    'Maré Suede Card Holder': 'Belvedere Card Holder',
+    'Maré Ring Necklace': 'Aurelio Ring Necklace',
+    'Maré Clear Fade Sunglasses': 'Lucent Fade Sunglasses',
+    'Maré Herringbone Bracelet': 'Signet Herringbone Bracelet'
+  };
+  const readCart = () => { try { return JSON.parse(localStorage.getItem(storageKey) || '[]').map((item) => ({ ...item, name: productNameAliases[item.name] || item.name, image: imageAliases[item.image] || item.image })); } catch { return []; } };
   const writeCart = (cart) => { try { localStorage.setItem(storageKey, JSON.stringify(cart)); } catch {} };
   const formatPrice = (value) => `$${Number(value).toFixed(2)}`;
   const pageLoader = document.querySelector('.page-loader');
