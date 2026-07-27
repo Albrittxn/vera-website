@@ -751,16 +751,14 @@
   });
 
   function escapeHTML(value) { return String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[char]); }
+  let sessionCouponCode = '';
+
   function getActiveCoupon() {
-    return (localStorage.getItem('vera-coupon') || '').trim().toUpperCase();
+    return sessionCouponCode;
   }
 
   function setActiveCoupon(code) {
-    if (code) {
-      localStorage.setItem('vera-coupon', code.trim().toUpperCase());
-    } else {
-      localStorage.removeItem('vera-coupon');
-    }
+    sessionCouponCode = (code || '').trim().toUpperCase();
   }
 
   function calculateCouponDiscount(code, cart) {
@@ -768,14 +766,12 @@
     const normalized = code.trim().toUpperCase();
 
     if (normalized === 'ELLIE') {
-      // 1 Free Product (deduct price of highest/selected single item)
       const prices = cart.map((i) => i.price).sort((a, b) => b - a);
       const freeAmount = prices[0] || 0;
       return { amount: freeAmount, name: 'ELLIE (1 Free Product)', error: null };
     }
 
     if (normalized === 'ELLIE2') {
-      // Buy 1 Product Get 2 Free (requires at least 3 items in cart)
       if (cart.length < 3) {
         return {
           amount: 0,
@@ -858,7 +854,7 @@
     }
 
     const discountedSubtotal = Math.max(0, subtotal - discountInfo.amount);
-    const shippingFee = calculateShippingFee(discountedSubtotal);
+    const shippingFee = (discountedSubtotal >= 50) ? 0 : calculateShippingFee(subtotal);
     const grandTotal = discountedSubtotal + shippingFee;
 
     if (tracker) {

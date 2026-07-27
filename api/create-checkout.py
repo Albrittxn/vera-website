@@ -77,7 +77,7 @@ class handler(BaseHTTPRequestHandler):
 
         discount_amount, discount_title = calculate_coupon_discount(coupon_code, cart_items)
         discounted_subtotal = max(0.0, subtotal - discount_amount)
-        shipping_fee = calculate_shipping(discounted_subtotal)
+        shipping_fee = 0 if discounted_subtotal >= 50 else calculate_shipping(subtotal)
 
         if shipping_fee > 0:
             line_items.append({
