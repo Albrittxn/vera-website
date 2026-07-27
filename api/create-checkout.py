@@ -10,6 +10,37 @@ def calculate_shipping(subtotal):
         return 0
     return 6
 
+CATALOG_CACHE = {}
+
+def get_catalog_map(access_token):
+    global CATALOG_CACHE
+    if CATALOG_CACHE:
+        return CATALOG_CACHE
+
+    try:
+        req = urllib.request.Request(
+            'https://connect.squareup.com/v2/catalog/list?types=ITEM',
+            headers={
+                'Authorization': f'Bearer {access_token}',
+                'Square-Version': '2024-12-18'
+            }
+        )
+        with urllib.request.urlopen(req) as resp:
+            res = json.loads(resp.read().decode('utf-8'))
+            mapping = {}
+            for item_obj in res.get('objects', []):
+                item_name = item_obj.get('item_data', {}).get('name', '')
+                for var_obj in item_obj.get('item_data', {}).get('variations', []):
+                    var_id = var_obj.get('id')
+                    var_name = var_obj.get('item_variation_data', {}).get('name', '')
+                    mapping[f"{item_name}|{var_name}"] = var_id
+                    mapping[f"{item_name.lower()}|{var_name.lower()}"] = var_id
+            CATALOG_CACHE = mapping
+            return CATALOG_CACHE
+    except Exception as ex:
+        print("Error fetching catalog map:", ex)
+        return {}
+
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers.get('Content-Length', 0))
@@ -28,6 +59,7 @@ class handler(BaseHTTPRequestHandler):
         domain = "connect.squareupsandbox.com" if env == 'sandbox' else "connect.squareup.com"
         url = f"https://{domain}/v2/online-checkout/payment-links"
 
+        catalog_map = get_catalog_map(access_token)
         subtotal = sum(float(item.get('price', 0)) * int(item.get('quantity', 1)) for item in raw_cart_items)
 
         line_items = []
@@ -38,21 +70,31 @@ class handler(BaseHTTPRequestHandler):
             price = float(item.get('price', 0))
             quantity = int(item.get('quantity', 1))
 
-            details = []
-            if color: details.append(color)
-            if size and size != 'O/S': details.append(f"Size {size}")
-            
-            title = f"{name} ({', '.join(details)})" if details else name
-            price_cents = int(round(price * 100))
+            # Lookup catalog_object_id
+            var_key = f"{color} / {size}" if size and size != 'O/S' else color
+            catalog_id = catalog_map.get(f"{name}|{var_key}") or catalog_map.get(f"{name}|{color}")
 
-            line_items.append({
-                "name": title,
-                "quantity": str(quantity),
-                "base_price_money": {
-                    "amount": price_cents,
-                    "currency": "USD"
-                }
-            })
+            if catalog_id:
+                line_items.append({
+                    "catalog_object_id": catalog_id,
+                    "quantity": str(quantity)
+                })
+            else:
+                details = []
+                if color: details.append(color)
+                if size and size != 'O/S': details.append(f"Size {size}")
+                
+                title = f"{name} ({', '.join(details)})" if details else name
+                price_cents = int(round(price * 100))
+
+                line_items.append({
+                    "name": title,
+                    "quantity": str(quantity),
+                    "base_price_money": {
+                        "amount": price_cents,
+                        "currency": "USD"
+                    }
+                })
 
         shipping_fee = calculate_shipping(subtotal)
         if shipping_fee > 0:
