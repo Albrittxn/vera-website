@@ -17,19 +17,27 @@
     <div class="cart-heading" data-reveal><div><p class="section-kicker">Your selection</p><h1>Your bag</h1></div><p>A quiet place for the pieces you want to take with you.</p></div>
     
     <div class="shipping-tracker is-hidden" data-shipping-tracker>
-      <p class="shipping-tracker-text" data-shipping-tracker-text>Add <strong>$22.00</strong> more to unlock <strong>Free Shipping</strong>!</p>
+      <div class="shipping-tracker-header">
+        <span class="shipping-tracker-label">Shipping</span>
+        <span class="shipping-tracker-text" data-shipping-tracker-text>Add <strong>$22.00</strong> more for complimentary shipping</span>
+      </div>
       <div class="shipping-tracker-bar"><div class="shipping-tracker-fill" data-shipping-tracker-fill style="width: 0%;"></div></div>
     </div>
 
     <div class="cart-list" data-cart-list></div>
     <p class="cart-empty" data-cart-empty>Your bag is empty for now. Start with a look through the collections.</p>
+    
     <div class="cart-summary is-hidden" data-cart-summary>
       <div class="cart-totals-breakdown">
         <div class="cart-calc-line"><span>Subtotal</span><span data-cart-subtotal>$0.00</span></div>
-        <div class="cart-calc-line"><span>Shipping</span><span data-cart-shipping>$0.00</span></div>
+        <div class="cart-calc-line"><span>Shipping</span><span data-cart-shipping>Calculated at checkout</span></div>
+        <div class="cart-calc-divider"></div>
         <div class="cart-calc-line cart-calc-total"><span>Total</span><span data-cart-total>$0.00</span></div>
       </div>
-      <button class="button-solid" type="button" data-square-checkout>Proceed to Square Checkout</button>
+      <div class="cart-actions">
+        <button class="button-solid cart-checkout-btn" type="button" data-square-checkout>Proceed to Checkout</button>
+        <p class="cart-guarantee-note">✦ Secure checkout powered by Square · 30-day effortless returns</p>
+      </div>
     </div>
   </main>
   <footer class="site-footer"><div class="shell footer-inner"><a class="footer-logo" href="/"><img src="vera-logo.png" alt="VERA"></a><p>True by nature.</p><div><a href="summer">Summer 26</a><a href="accessories">Accessories</a></div><span>© <span data-year></span> VERA</span></div></footer>

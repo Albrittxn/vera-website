@@ -807,16 +807,16 @@
         }
         if (trackerText) {
           if (subtotal >= 50) {
-            trackerText.innerHTML = `<strong>🎉 You unlocked Free Shipping!</strong>`;
+            trackerText.innerHTML = `<strong>Complimentary shipping unlocked</strong>`;
           } else {
-            trackerText.innerHTML = `Add <strong>$${remaining.toFixed(2)}</strong> more to unlock <strong>Free Shipping</strong>!`;
+            trackerText.innerHTML = `Add <strong>$${remaining.toFixed(2)}</strong> more for complimentary shipping`;
           }
         }
       }
     }
 
     if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
-    if (shippingEl) shippingEl.textContent = shippingFee === 0 ? 'FREE' : formatPrice(shippingFee);
+    if (shippingEl) shippingEl.textContent = shippingFee === 0 ? 'Complimentary' : formatPrice(shippingFee);
     if (totalEl) totalEl.textContent = formatPrice(grandTotal);
   }
 
