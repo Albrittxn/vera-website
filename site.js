@@ -758,6 +758,8 @@
     });
   });
 
+  function escapeHTML(value) { return String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[char]); }
+
   function calculateShippingFee(subtotal) {
     if (subtotal <= 0 || subtotal >= 50) return 0;
     return 6;
@@ -906,7 +908,6 @@
   setupProductVariants();
   setupProductInlay();
   checkCheckoutSuccess();
-  setupCouponEvents();
   updateCartCount();
   renderCart();
   setupMobileNavigation();
