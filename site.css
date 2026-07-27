@@ -782,26 +782,42 @@ body.inlay-open { overflow: hidden; }
 /* Responsive Inlay Modal */
 @media (max-width: 840px) {
   .product-inlay-backdrop {
-    padding: 12px;
+    padding: 12px 10px 0;
     align-items: flex-end;
   }
   .product-inlay-panel {
     grid-template-columns: 1fr;
-    max-height: 92vh;
+    height: auto;
+    max-height: 90vh;
     overflow-y: auto;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 -12px 40px rgba(11, 31, 30, 0.25);
   }
   .product-inlay-visual {
-    min-height: 280px;
-    aspect-ratio: 4 / 5;
+    height: 320px;
+    min-height: 260px;
+  }
+  .product-inlay-gallery {
+    height: 100%;
   }
   .product-inlay-details {
-    padding: 28px 22px 28px;
+    height: auto;
+    max-height: none;
+    overflow-y: visible;
+    padding: 24px 18px 28px;
   }
   .product-inlay-perks {
     grid-template-columns: 1fr 1fr 1fr;
     gap: 6px;
     font-size: 8px;
   }
+  .product-inlay-size-btn {
+    min-width: 44px;
+    height: 38px;
+    padding: 0 9px;
+    font-size: 10px;
+  }
+}
 .checkout-success-banner {
   margin-bottom: 24px;
   padding: 16px 20px;
