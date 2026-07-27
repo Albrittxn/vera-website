@@ -30,9 +30,22 @@
     <div class="cart-summary is-hidden" data-cart-summary>
       <div class="cart-totals-breakdown">
         <div class="cart-calc-line"><span>Subtotal</span><span data-cart-subtotal>$0.00</span></div>
+        <div class="cart-calc-line cart-discount-line is-hidden" data-cart-discount-row><span>Discount (<span data-cart-discount-name>ELLIE</span>)</span><span data-cart-discount-amount>-$0.00</span></div>
         <div class="cart-calc-line"><span>Shipping</span><span data-cart-shipping>Calculated at checkout</span></div>
         <div class="cart-calc-divider"></div>
         <div class="cart-calc-line cart-calc-total"><span>Total</span><span data-cart-total>$0.00</span></div>
+
+        <div class="cart-promo-box">
+          <div class="cart-promo-input-wrap" data-coupon-input-wrap>
+            <input type="text" class="cart-promo-input" placeholder="Promo code" data-coupon-input autocomplete="off" spellcheck="false">
+            <button type="button" class="cart-promo-btn" data-coupon-apply>Apply</button>
+          </div>
+          <div class="cart-promo-tag is-hidden" data-coupon-tag>
+            <span>Code: <strong data-coupon-code-text>ELLIE</strong></span>
+            <button type="button" class="cart-promo-remove" data-coupon-remove aria-label="Remove coupon">Remove</button>
+          </div>
+          <p class="cart-promo-message" data-coupon-msg></p>
+        </div>
       </div>
       <div class="cart-actions">
         <button class="button-solid cart-checkout-btn" type="button" data-square-checkout>Proceed to Checkout</button>
@@ -41,6 +54,6 @@
     </div>
   </main>
   <footer class="site-footer"><div class="shell footer-inner"><a class="footer-logo" href="/"><img src="vera-logo.png" alt="VERA"></a><p>True by nature.</p><div><a href="summer">Summer 26</a><a href="accessories">Accessories</a></div><span>© <span data-year></span> VERA</span></div></footer>
-  <script src="site.js?v=20260726-18" defer></script>
+  <script src="site.js?v=20260726-19" defer></script>
 </body>
 </html>

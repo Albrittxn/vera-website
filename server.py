@@ -25,6 +25,26 @@ def calculate_shipping(subtotal):
         return 0
     return max(2, int(math.ceil(subtotal / 10.0)) * 2)
 
+def calculate_coupon_discount(coupon_code, cart_items):
+    if not coupon_code or not cart_items:
+        return 0.0, ""
+    code = coupon_code.strip().upper()
+    prices = sorted([float(item.get('price', 0)) for item in cart_items])
+    if not prices:
+        return 0.0, ""
+
+    if code == 'ELLIE':
+        free_amount = max(prices)
+        return free_amount, "Coupon ELLIE (1 Free Product)"
+
+    if code == 'ELLIE2':
+        if len(cart_items) < 3:
+            return 0.0, ""
+        free_amount = prices[0] + prices[1]
+        return free_amount, "Coupon ELLIE2 (Buy 1 Get 2 Free)"
+
+    return 0.0, ""
+
 class CleanURLHandler(http.server.SimpleHTTPRequestHandler):
     def _rewrite_clean_path(self):
         parts = self.path.split('?')
@@ -57,6 +77,7 @@ class CleanURLHandler(http.server.SimpleHTTPRequestHandler):
                 data = {}
 
             cart_items = data.get('items', [])
+            coupon_code = data.get('coupon', '')
             
             access_token = os.environ.get('SQUARE_ACCESS_TOKEN', '')
             location_id = os.environ.get('SQUARE_LOCATION_ID', '')
@@ -111,7 +132,10 @@ class CleanURLHandler(http.server.SimpleHTTPRequestHandler):
                     }
                 })
 
-            shipping_fee = calculate_shipping(subtotal)
+            discount_amount, discount_title = calculate_coupon_discount(coupon_code, cart_items)
+            discounted_subtotal = max(0.0, subtotal - discount_amount)
+            shipping_fee = calculate_shipping(discounted_subtotal)
+
             if shipping_fee > 0:
                 line_items.append({
                     "name": "Standard Shipping ($2 per $10 under $50)",
@@ -122,12 +146,25 @@ class CleanURLHandler(http.server.SimpleHTTPRequestHandler):
                     }
                 })
 
+            order_payload = {
+                "location_id": location_id,
+                "line_items": line_items
+            }
+
+            if discount_amount > 0 and discount_title:
+                order_payload["discounts"] = [
+                    {
+                        "name": discount_title,
+                        "amount_money": {
+                            "amount": int(round(discount_amount * 100)),
+                            "currency": "USD"
+                        }
+                    }
+                ]
+
             payload = {
                 "idempotency_key": str(uuid.uuid4()),
-                "order": {
-                    "location_id": location_id,
-                    "line_items": line_items
-                },
+                "order": order_payload,
                 "checkout_options": {
                     "redirect_url": "http://localhost:8000/cart?checkout=success",
                     "ask_for_shipping_address": True
@@ -184,5 +221,5 @@ if __name__ == '__main__':
     sys.stdout.reconfigure(line_buffering=True)
     socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", PORT), CleanURLHandler) as httpd:
-        print(f"VERA Server running on http://localhost:{PORT} with Square API & Tiered Shipping")
+        print(f"VERA Server running on http://localhost:{PORT} with Square API & Coupon System")
         httpd.serve_forever()

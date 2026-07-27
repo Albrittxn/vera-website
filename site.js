@@ -751,9 +751,44 @@
   });
 
   function escapeHTML(value) { return String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[char]); }
-  function calculateShippingFee(subtotal) {
-    if (subtotal <= 0 || subtotal >= 50) return 0;
-    return Math.max(2, Math.ceil(subtotal / 10) * 2);
+  function getActiveCoupon() {
+    return (localStorage.getItem('vera-coupon') || '').trim().toUpperCase();
+  }
+
+  function setActiveCoupon(code) {
+    if (code) {
+      localStorage.setItem('vera-coupon', code.trim().toUpperCase());
+    } else {
+      localStorage.removeItem('vera-coupon');
+    }
+  }
+
+  function calculateCouponDiscount(code, cart) {
+    if (!code || !cart || !cart.length) return { amount: 0, name: '', error: null };
+    const normalized = code.trim().toUpperCase();
+
+    if (normalized === 'ELLIE') {
+      // 1 Free Product (deduct price of highest/selected single item)
+      const prices = cart.map((i) => i.price).sort((a, b) => b - a);
+      const freeAmount = prices[0] || 0;
+      return { amount: freeAmount, name: 'ELLIE (1 Free Product)', error: null };
+    }
+
+    if (normalized === 'ELLIE2') {
+      // Buy 1 Product Get 2 Free (requires at least 3 items in cart)
+      if (cart.length < 3) {
+        return {
+          amount: 0,
+          name: 'ELLIE2',
+          error: 'ELLIE2 requires at least 3 items in your bag (Buy 1, Get 2 Free)'
+        };
+      }
+      const prices = cart.map((i) => i.price).sort((a, b) => a - b);
+      const freeAmount = prices[0] + prices[1];
+      return { amount: freeAmount, name: 'ELLIE2 (Buy 1 Get 2 Free)', error: null };
+    }
+
+    return { amount: 0, name: '', error: `Invalid promo code "${code}"` };
   }
 
   function renderCart() {
@@ -765,8 +800,17 @@
     const trackerText = document.querySelector('[data-shipping-tracker-text]');
     const trackerFill = document.querySelector('[data-shipping-tracker-fill]');
     const subtotalEl = document.querySelector('[data-cart-subtotal]');
+    const discountRow = document.querySelector('[data-cart-discount-row]');
+    const discountNameEl = document.querySelector('[data-cart-discount-name]');
+    const discountAmountEl = document.querySelector('[data-cart-discount-amount]');
     const shippingEl = document.querySelector('[data-cart-shipping]');
     const totalEl = document.querySelector('[data-cart-total]');
+
+    const promoWrap = document.querySelector('[data-coupon-input-wrap]');
+    const promoTag = document.querySelector('[data-coupon-tag]');
+    const promoCodeText = document.querySelector('[data-coupon-code-text]');
+    const promoMsg = document.querySelector('[data-coupon-msg]');
+
     const cart = readCart();
 
     list.innerHTML = '';
@@ -791,22 +835,45 @@
     });
 
     const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
-    const shippingFee = calculateShippingFee(subtotal);
-    const grandTotal = subtotal + shippingFee;
+    const activeCoupon = getActiveCoupon();
+    const discountInfo = calculateCouponDiscount(activeCoupon, cart);
+
+    if (discountInfo.error && promoMsg) {
+      promoMsg.textContent = discountInfo.error;
+      promoMsg.className = 'cart-promo-message is-error';
+    }
+
+    if (discountInfo.amount > 0 && !discountInfo.error) {
+      if (discountRow) discountRow.classList.remove('is-hidden');
+      if (discountNameEl) discountNameEl.textContent = activeCoupon;
+      if (discountAmountEl) discountAmountEl.textContent = `-${formatPrice(discountInfo.amount)}`;
+
+      if (promoWrap) promoWrap.classList.add('is-hidden');
+      if (promoTag) promoTag.classList.remove('is-hidden');
+      if (promoCodeText) promoCodeText.textContent = `${activeCoupon} (-${formatPrice(discountInfo.amount)})`;
+    } else {
+      if (discountRow) discountRow.classList.add('is-hidden');
+      if (promoWrap) promoWrap.classList.remove('is-hidden');
+      if (promoTag) promoTag.classList.add('is-hidden');
+    }
+
+    const discountedSubtotal = Math.max(0, subtotal - discountInfo.amount);
+    const shippingFee = calculateShippingFee(discountedSubtotal);
+    const grandTotal = discountedSubtotal + shippingFee;
 
     if (tracker) {
       if (subtotal <= 0) {
         tracker.classList.add('is-hidden');
       } else {
         tracker.classList.remove('is-hidden');
-        const remaining = 50 - subtotal;
-        const percentage = Math.min(Math.max((subtotal / 50) * 100, 0), 100);
+        const remaining = 50 - discountedSubtotal;
+        const percentage = Math.min(Math.max((discountedSubtotal / 50) * 100, 0), 100);
         if (trackerFill) {
           trackerFill.style.width = `${percentage}%`;
-          trackerFill.classList.toggle('unlocked', subtotal >= 50);
+          trackerFill.classList.toggle('unlocked', discountedSubtotal >= 50);
         }
         if (trackerText) {
-          if (subtotal >= 50) {
+          if (discountedSubtotal >= 50) {
             trackerText.innerHTML = `<strong>Complimentary shipping unlocked</strong>`;
           } else {
             trackerText.innerHTML = `Add <strong>$${remaining.toFixed(2)}</strong> more for complimentary shipping`;
@@ -820,12 +887,60 @@
     if (totalEl) totalEl.textContent = formatPrice(grandTotal);
   }
 
+  function setupCouponEvents() {
+    const applyBtn = document.querySelector('[data-coupon-apply]');
+    const removeBtn = document.querySelector('[data-coupon-remove]');
+    const inputEl = document.querySelector('[data-coupon-input]');
+    const msgEl = document.querySelector('[data-coupon-msg]');
+
+    function handleApply() {
+      const code = (inputEl?.value || '').trim();
+      if (!code) return;
+      const cart = readCart();
+      const res = calculateCouponDiscount(code, cart);
+
+      if (res.error) {
+        if (msgEl) {
+          msgEl.textContent = res.error;
+          msgEl.className = 'cart-promo-message is-error';
+        }
+        return;
+      }
+
+      setActiveCoupon(code);
+      if (inputEl) inputEl.value = '';
+      if (msgEl) {
+        msgEl.textContent = `Promo code "${code.toUpperCase()}" applied!`;
+        msgEl.className = 'cart-promo-message is-success';
+      }
+      renderCart();
+    }
+
+    applyBtn?.addEventListener('click', handleApply);
+    inputEl?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleApply();
+      }
+    });
+
+    removeBtn?.addEventListener('click', () => {
+      setActiveCoupon('');
+      if (msgEl) {
+        msgEl.textContent = 'Promo code removed';
+        msgEl.className = 'cart-promo-message';
+      }
+      renderCart();
+    });
+  }
+
   function checkCheckoutSuccess() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('checkout') === 'success') {
       const banner = document.querySelector('[data-checkout-success]');
       if (banner) banner.classList.remove('is-hidden');
       writeCart([]);
+      setActiveCoupon('');
       updateCartCount();
     }
   }
@@ -843,7 +958,7 @@
       const response = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: cart })
+        body: JSON.stringify({ items: cart, coupon: getActiveCoupon() })
       });
       const data = await response.json();
 
@@ -897,6 +1012,7 @@
   setupProductVariants();
   setupProductInlay();
   checkCheckoutSuccess();
+  setupCouponEvents();
   updateCartCount();
   renderCart();
   setupMobileNavigation();
