@@ -22,7 +22,7 @@ if os.path.exists(env_path):
 def calculate_shipping(subtotal):
     if subtotal <= 0 or subtotal >= 50:
         return 0
-    return 6
+    return round(subtotal * 0.15, 2)
 
 class CleanURLHandler(http.server.SimpleHTTPRequestHandler):
     def _rewrite_clean_path(self):

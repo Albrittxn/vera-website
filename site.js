@@ -762,7 +762,7 @@
 
   function calculateShippingFee(subtotal) {
     if (subtotal <= 0 || subtotal >= 50) return 0;
-    return 6;
+    return Math.round(subtotal * 0.15 * 100) / 100;
   }
 
   function renderCart() {
@@ -819,7 +819,7 @@
           if (subtotal >= 50) {
             trackerText.innerHTML = `<strong>Complimentary shipping unlocked</strong>`;
           } else {
-            trackerText.innerHTML = `Add <strong>$${remaining.toFixed(2)}</strong> more for complimentary shipping ($6.00 flat rate below $50.00)`;
+            trackerText.innerHTML = `Add <strong>$${remaining.toFixed(2)}</strong> more for complimentary shipping (15% of subtotal below $50.00)`;
           }
         }
       }
