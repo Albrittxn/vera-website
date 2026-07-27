@@ -840,17 +840,17 @@
     }
 
     if (discountInfo.amount > 0 && !discountInfo.error) {
-      if (discountRow) discountRow.classList.remove('is-hidden');
+      if (discountRow) { discountRow.style.display = 'flex'; discountRow.classList.remove('is-hidden'); }
       if (discountNameEl) discountNameEl.textContent = activeCoupon;
       if (discountAmountEl) discountAmountEl.textContent = `-${formatPrice(discountInfo.amount)}`;
 
-      if (promoWrap) promoWrap.classList.add('is-hidden');
-      if (promoTag) promoTag.classList.remove('is-hidden');
-      if (promoCodeText) promoCodeText.textContent = `${activeCoupon} (-${formatPrice(discountInfo.amount)})`;
+      if (promoWrap) { promoWrap.style.display = 'none'; promoWrap.classList.add('is-hidden'); }
+      if (promoTag) { promoTag.style.display = 'flex'; promoTag.classList.remove('is-hidden'); }
+      if (promoCodeText) promoCodeText.textContent = activeCoupon;
     } else {
-      if (discountRow) discountRow.classList.add('is-hidden');
-      if (promoWrap) promoWrap.classList.remove('is-hidden');
-      if (promoTag) promoTag.classList.add('is-hidden');
+      if (discountRow) { discountRow.style.display = 'none'; discountRow.classList.add('is-hidden'); }
+      if (promoWrap) { promoWrap.style.display = 'flex'; promoWrap.classList.remove('is-hidden'); }
+      if (promoTag) { promoTag.style.display = 'none'; promoTag.classList.add('is-hidden'); }
     }
 
     const discountedSubtotal = Math.max(0, subtotal - discountInfo.amount);
@@ -1005,6 +1005,7 @@
   updateOverlayHeader();
 
   document.querySelectorAll('[data-year]').forEach((element) => { element.textContent = new Date().getFullYear(); });
+  localStorage.removeItem('vera-coupon');
   setupProductVariants();
   setupProductInlay();
   checkCheckoutSuccess();
