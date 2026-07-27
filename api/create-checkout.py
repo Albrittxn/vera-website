@@ -8,7 +8,7 @@ import uuid
 def calculate_shipping(subtotal):
     if subtotal <= 0 or subtotal >= 50:
         return 0
-    return round(subtotal * 0.15, 2)
+    return 6
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
