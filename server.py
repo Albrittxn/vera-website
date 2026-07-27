@@ -57,9 +57,9 @@ class CleanURLHandler(http.server.SimpleHTTPRequestHandler):
 
             raw_cart_items = data.get('items', [])
 
-            access_token = os.environ.get('SQUARE_ACCESS_TOKEN', '')
-            location_id = os.environ.get('SQUARE_LOCATION_ID', '')
-            env = os.environ.get('SQUARE_ENVIRONMENT', 'sandbox').lower()
+            access_token = os.environ.get('SQUARE_ACCESS_TOKEN', 'EAAAl9rbYA4nEVssZWfJNN01kbyjozgSe4KvutMwdBWcp96ZdG0aijhT65MP91as')
+            location_id = os.environ.get('SQUARE_LOCATION_ID', 'LZSC3WQX1Z0A3')
+            env = os.environ.get('SQUARE_ENVIRONMENT', 'production').lower()
 
             is_placeholder = (
                 not access_token or 

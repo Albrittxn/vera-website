@@ -22,7 +22,7 @@ class handler(BaseHTTPRequestHandler):
         raw_cart_items = data.get('items', [])
         
         access_token = os.environ.get('SQUARE_ACCESS_TOKEN', 'EAAAl9rbYA4nEVssZWfJNN01kbyjozgSe4KvutMwdBWcp96ZdG0aijhT65MP91as')
-        location_id = os.environ.get('SQUARE_LOCATION_ID', 'LAG66A16ZGGVR')
+        location_id = os.environ.get('SQUARE_LOCATION_ID', 'LZSC3WQX1Z0A3')
         env = os.environ.get('SQUARE_ENVIRONMENT', 'production').lower()
 
         domain = "connect.squareupsandbox.com" if env == 'sandbox' else "connect.squareup.com"
