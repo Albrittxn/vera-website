@@ -6,7 +6,6 @@ import json
 import urllib.request
 import urllib.error
 import uuid
-import math
 
 PORT = 8000
 
@@ -23,38 +22,7 @@ if os.path.exists(env_path):
 def calculate_shipping(subtotal):
     if subtotal <= 0 or subtotal >= 50:
         return 0
-    return max(2, int(math.ceil(subtotal / 10.0)) * 2)
-
-def apply_coupon_to_line_items(coupon_code, cart_items):
-    code = (coupon_code or '').strip().upper()
-    processed_items = []
-    for item in cart_items:
-        processed_items.append({
-            'name': item.get('name', 'VERA Product'),
-            'color': item.get('color', ''),
-            'size': item.get('size', ''),
-            'price': float(item.get('price', 0)),
-            'quantity': int(item.get('quantity', 1)),
-            'discount_note': ''
-        })
-
-    if not code or not processed_items:
-        return processed_items
-
-    if code == 'ELLIE':
-        max_idx = max(range(len(processed_items)), key=lambda i: processed_items[i]['price'])
-        processed_items[max_idx]['price'] = 0.0
-        processed_items[max_idx]['discount_note'] = 'ELLIE 100% OFF'
-
-    elif code == 'ELLIE2':
-        if len(processed_items) >= 3:
-            sorted_indices = sorted(range(len(processed_items)), key=lambda i: processed_items[i]['price'])
-            processed_items[sorted_indices[0]]['price'] = 0.0
-            processed_items[sorted_indices[0]]['discount_note'] = 'ELLIE2 Free Item'
-            processed_items[sorted_indices[1]]['price'] = 0.0
-            processed_items[sorted_indices[1]]['discount_note'] = 'ELLIE2 Free Item'
-
-    return processed_items
+    return 6
 
 class CleanURLHandler(http.server.SimpleHTTPRequestHandler):
     def _rewrite_clean_path(self):
@@ -88,7 +56,6 @@ class CleanURLHandler(http.server.SimpleHTTPRequestHandler):
                 data = {}
 
             raw_cart_items = data.get('items', [])
-            coupon_code = data.get('coupon', '')
 
             access_token = os.environ.get('SQUARE_ACCESS_TOKEN', '')
             location_id = os.environ.get('SQUARE_LOCATION_ID', '')
@@ -118,36 +85,33 @@ class CleanURLHandler(http.server.SimpleHTTPRequestHandler):
             domain = "connect.squareupsandbox.com" if env == 'sandbox' else "connect.squareup.com"
             url = f"https://{domain}/v2/online-checkout/payment-links"
 
-            original_subtotal = sum(float(item.get('price', 0)) * int(item.get('quantity', 1)) for item in raw_cart_items)
-            processed_items = apply_coupon_to_line_items(coupon_code, raw_cart_items)
-            discounted_subtotal = sum(item['price'] * item['quantity'] for item in processed_items)
+            subtotal = sum(float(item.get('price', 0)) * int(item.get('quantity', 1)) for item in raw_cart_items)
 
             line_items = []
-            for item in processed_items:
-                name = item['name']
-                color = item['color']
-                size = item['size']
-                discount_note = item['discount_note']
+            for item in raw_cart_items:
+                name = item.get('name', 'VERA Product')
+                color = item.get('color', '')
+                size = item.get('size', '')
+                price = float(item.get('price', 0))
+                quantity = int(item.get('quantity', 1))
+
                 details = []
                 if color: details.append(color)
                 if size and size != 'O/S': details.append(f"Size {size}")
                 
                 title = f"{name} ({', '.join(details)})" if details else name
-                if discount_note:
-                    title += f" — {discount_note}"
-
-                price_cents = int(round(item['price'] * 100))
+                price_cents = int(round(price * 100))
 
                 line_items.append({
                     "name": title,
-                    "quantity": str(item['quantity']),
+                    "quantity": str(quantity),
                     "base_price_money": {
                         "amount": price_cents,
                         "currency": "USD"
                     }
                 })
 
-            shipping_fee = 0 if discounted_subtotal >= 50 else calculate_shipping(original_subtotal)
+            shipping_fee = calculate_shipping(subtotal)
             if shipping_fee > 0:
                 line_items.append({
                     "name": "Standard Shipping",
@@ -220,5 +184,5 @@ if __name__ == '__main__':
     sys.stdout.reconfigure(line_buffering=True)
     socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", PORT), CleanURLHandler) as httpd:
-        print(f"VERA Server running on http://localhost:{PORT} with Direct Line Item Checkout")
+        print(f"VERA Server running on http://localhost:{PORT} with Flat $6 Shipping")
         httpd.serve_forever()
