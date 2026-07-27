@@ -96,7 +96,15 @@
     try {
       return JSON.parse(localStorage.getItem(storageKey) || '[]').map((item) => {
         const name = productNameAliases[item.name] || item.name;
-        return { ...item, name, size: item.size || 'M', image: imageAliases[item.image] || item.image, price: productPrices[name] ?? item.price };
+        const priceNum = Number(productPrices[name] ?? item.price);
+        const validPrice = (isNaN(priceNum) || priceNum <= 0) ? (productPrices[name] || 28) : priceNum;
+        return {
+          ...item,
+          name,
+          size: item.size || 'M',
+          image: imageAliases[item.image] || item.image,
+          price: validPrice
+        };
       });
     } catch {
       return [];
@@ -830,7 +838,7 @@
       list.appendChild(row);
     });
 
-    const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+    const subtotal = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
     const activeCoupon = getActiveCoupon();
     const discountInfo = calculateCouponDiscount(activeCoupon, cart);
 
