@@ -11,25 +11,36 @@ def calculate_shipping(subtotal):
         return 0
     return max(2, int(math.ceil(subtotal / 10.0)) * 2)
 
-def calculate_coupon_discount(coupon_code, cart_items):
-    if not coupon_code or not cart_items:
-        return 0.0, ""
-    code = coupon_code.strip().upper()
-    prices = sorted([float(item.get('price', 0)) for item in cart_items])
-    if not prices:
-        return 0.0, ""
+def apply_coupon_to_line_items(coupon_code, cart_items):
+    code = (coupon_code or '').strip().upper()
+    processed_items = []
+    for item in cart_items:
+        processed_items.append({
+            'name': item.get('name', 'VERA Product'),
+            'color': item.get('color', ''),
+            'size': item.get('size', ''),
+            'price': float(item.get('price', 0)),
+            'quantity': int(item.get('quantity', 1)),
+            'discount_note': ''
+        })
+
+    if not code or not processed_items:
+        return processed_items
 
     if code == 'ELLIE':
-        free_amount = max(prices)
-        return free_amount, "Coupon ELLIE (1 Free Product)"
+        max_idx = max(range(len(processed_items)), key=lambda i: processed_items[i]['price'])
+        processed_items[max_idx]['price'] = 0.0
+        processed_items[max_idx]['discount_note'] = 'ELLIE 100% OFF'
 
-    if code == 'ELLIE2':
-        if len(cart_items) < 3:
-            return 0.0, ""
-        free_amount = prices[0] + prices[1]
-        return free_amount, "Coupon ELLIE2 (Buy 1 Get 2 Free)"
+    elif code == 'ELLIE2':
+        if len(processed_items) >= 3:
+            sorted_indices = sorted(range(len(processed_items)), key=lambda i: processed_items[i]['price'])
+            processed_items[sorted_indices[0]]['price'] = 0.0
+            processed_items[sorted_indices[0]]['discount_note'] = 'ELLIE2 Free Item'
+            processed_items[sorted_indices[1]]['price'] = 0.0
+            processed_items[sorted_indices[1]]['discount_note'] = 'ELLIE2 Free Item'
 
-    return 0.0, ""
+    return processed_items
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -40,7 +51,7 @@ class handler(BaseHTTPRequestHandler):
         except Exception:
             data = {}
 
-        cart_items = data.get('items', [])
+        raw_cart_items = data.get('items', [])
         coupon_code = data.get('coupon', '')
         
         access_token = os.environ.get('SQUARE_ACCESS_TOKEN', 'EAAAl9rbYA4nEVssZWfJNN01kbyjozgSe4KvutMwdBWcp96ZdG0aijhT65MP91as')
@@ -50,38 +61,39 @@ class handler(BaseHTTPRequestHandler):
         domain = "connect.squareupsandbox.com" if env == 'sandbox' else "connect.squareup.com"
         url = f"https://{domain}/v2/online-checkout/payment-links"
 
-        line_items = []
-        subtotal = 0.0
+        original_subtotal = sum(float(item.get('price', 0)) * int(item.get('quantity', 1)) for item in raw_cart_items)
+        processed_items = apply_coupon_to_line_items(coupon_code, raw_cart_items)
+        discounted_subtotal = sum(item['price'] * item['quantity'] for item in processed_items)
 
-        for item in cart_items:
-            name = item.get('name', 'VERA Product')
-            color = item.get('color', '')
-            size = item.get('size', '')
+        line_items = []
+        for item in processed_items:
+            name = item['name']
+            color = item['color']
+            size = item['size']
+            discount_note = item['discount_note']
             details = []
             if color: details.append(color)
             if size and size != 'O/S': details.append(f"Size {size}")
+            
             title = f"{name} ({', '.join(details)})" if details else name
-            item_price = float(item.get('price', 0))
-            quantity = int(item.get('quantity', 1))
-            subtotal += item_price * quantity
-            price_cents = int(round(item_price * 100))
+            if discount_note:
+                title += f" — {discount_note}"
+
+            price_cents = int(round(item['price'] * 100))
 
             line_items.append({
                 "name": title,
-                "quantity": str(quantity),
+                "quantity": str(item['quantity']),
                 "base_price_money": {
                     "amount": price_cents,
                     "currency": "USD"
                 }
             })
 
-        discount_amount, discount_title = calculate_coupon_discount(coupon_code, cart_items)
-        discounted_subtotal = max(0.0, subtotal - discount_amount)
-        shipping_fee = 0 if discounted_subtotal >= 50 else calculate_shipping(subtotal)
-
+        shipping_fee = 0 if discounted_subtotal >= 50 else calculate_shipping(original_subtotal)
         if shipping_fee > 0:
             line_items.append({
-                "name": "Standard Shipping ($2 per $10 under $50)",
+                "name": "Standard Shipping",
                 "quantity": "1",
                 "base_price_money": {
                     "amount": int(round(shipping_fee * 100)),
@@ -93,25 +105,12 @@ class handler(BaseHTTPRequestHandler):
         scheme = 'https' if 'veraclothing.store' in host or 'vercel.app' in host else 'http'
         redirect_url = f"{scheme}://{host}/cart?checkout=success"
 
-        order_payload = {
-            "location_id": location_id,
-            "line_items": line_items
-        }
-
-        if discount_amount > 0 and discount_title:
-            order_payload["discounts"] = [
-                {
-                    "name": discount_title,
-                    "amount_money": {
-                        "amount": int(round(discount_amount * 100)),
-                        "currency": "USD"
-                    }
-                }
-            ]
-
         payload = {
             "idempotency_key": str(uuid.uuid4()),
-            "order": order_payload,
+            "order": {
+                "location_id": location_id,
+                "line_items": line_items
+            },
             "checkout_options": {
                 "redirect_url": redirect_url,
                 "ask_for_shipping_address": True
