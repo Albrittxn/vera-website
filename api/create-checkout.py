@@ -8,7 +8,7 @@ import uuid
 def calculate_shipping(subtotal):
     if subtotal <= 0 or subtotal >= 50:
         return 0
-    return 6
+    return 5.95
 
 CATALOG_CACHE = {}
 
